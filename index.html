@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ONOKOS – Cari Kos Sekitar Kampus</title>
+<style>
+:root{--bg:#fff;--surf:#f3f0ec;--ink:#22252e;--mut:#5b6070;--pri:#c2410c;--onpri:#fff;--acc:#ffd166;--dark:#1f2a44;--line:#ddd6cc;--ok:#1b7f4b;--red:#b42318;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14161d;--surf:#1e222d;--ink:#eceef4;--mut:#a5abbb;--pri:#ff8a4c;--onpri:#2a1305;--line:#2f3544;--dark:#0e1220;--ok:#4cc38a}}
+:root[data-theme="dark"]{--bg:#14161d;--surf:#1e222d;--ink:#eceef4;--mut:#a5abbb;--pri:#ff8a4c;--onpri:#2a1305;--line:#2f3544;--dark:#0e1220;--ok:#4cc38a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Calibri,"Segoe UI",Arial,sans-serif;padding-bottom:84px}
+h1,h2,h3{font-family:Cambria,Georgia,serif;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
+header{background:var(--dark);color:#fff;padding:28px 0 56px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.logo{font:700 22px Cambria,Georgia,serif}.logo span{color:var(--acc)}
+.btn{border:0;border-radius:10px;padding:10px 16px;font:600 15px inherit;font-family:inherit;cursor:pointer;background:var(--pri);color:var(--onpri)}
+.btn.acc{background:var(--acc);color:#1f2a44}.btn.ghost{background:transparent;color:inherit;border:1.5px solid var(--line)}.btn.red{background:var(--red);color:#fff}
+header h1{font-size:clamp(26px,5vw,40px);margin:26px 0 8px;max-width:640px;line-height:1.15}
+header p{margin:0;color:#cdd3e4;max-width:560px}
+.panel{margin-top:-28px;background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:14px;display:grid;gap:12px;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-width:0}
+input[type=range]{padding:0;width:100%;accent-color:var(--pri)}
+input:focus,select:focus,button:focus-visible{outline:2px solid var(--pri);outline-offset:1px}
+#q{flex:1 1 240px}
+.sl{flex:1 1 240px;display:grid;gap:2px;font-size:14px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--pri);color:var(--onpri);border-color:var(--pri)}
+.meta{color:var(--mut);margin:16px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--surf);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.thumb{height:86px;border-radius:10px;display:grid;place-items:center;font-size:42px;background:var(--bg)}
+.card h3{font-size:17px;line-height:1.25}
+.mk{color:var(--mut);font-size:14px}
+.price{font:700 20px Cambria,Georgia,serif;color:var(--pri)}.price small{font:400 13px Calibri,Arial;color:var(--mut)}
+.tag{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;background:var(--acc);color:#1f2a44;margin-right:4px}
+.avail{color:var(--ok);font-weight:700;font-size:14px}.full{color:var(--red);font-weight:700;font-size:14px}
+.fac{font-size:13px;color:var(--mut)}
+.card .row{margin-top:auto;justify-content:space-between}
+.cmp{font-size:14px;display:flex;gap:6px;align-items:center;cursor:pointer}
+.empty{grid-column:1/-1;text-align:center;color:var(--mut);padding:40px 0}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--dark);color:#fff;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));display:none;justify-content:center;align-items:center;gap:12px;z-index:5}
+.bar.on{display:flex}
+dialog{border:0;border-radius:16px;padding:0;max-width:min(600px,94vw);width:100%;background:var(--bg);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+.dl{padding:20px;display:grid;gap:12px;max-height:85vh;overflow:auto}
+label{display:grid;gap:4px;font-weight:600;font-size:14px}
+.tbl{overflow-x:auto}table{border-collapse:collapse;width:100%;min-width:460px}
+th,td{text-align:left;padding:8px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+th{color:var(--mut);font-weight:600}.best{color:var(--ok);font-weight:700}
+footer{color:var(--mut);text-align:center;padding:30px 16px;font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <div class="top"><div class="logo">ONO<span>KOS</span></div><button class="btn acc" id="pasang">+ Pasang kos (pemilik)</button></div>
+  <h1>Temukan kos yang pas, tanpa buka banyak sumber.</h1>
+  <p>Saring berdasarkan harga, jarak ke kampus, dan fasilitas. Bandingkan lalu hubungi pemilik langsung.</p>
+</div></header>
+
+<main class="wrap">
+  <div class="panel">
+    <div class="row"><input id="q" type="search" placeholder="Cari nama kos atau area, mis. Tlogomas" aria-label="Cari"></div>
+    <div class="row">
+      <label class="sl">Harga maks: <span id="vP"></span><input id="p" type="range" min="300000" max="2000000" step="50000" value="2000000"></label>
+      <label class="sl">Jarak maks ke kampus: <span id="vD"></span><input id="d" type="range" min="0.2" max="5" step="0.1" value="5"></label>
+    </div>
+    <div class="row"><select id="tipe" aria-label="Tipe"><option value="">Semua tipe</option><option>Putra</option><option>Putri</option><option>Campur</option></select>
+      <select id="sort" aria-label="Urutkan"><option value="d">Terdekat</option><option value="lo">Harga terendah</option><option value="hi">Harga tertinggi</option></select>
+      <label class="cmp"><input type="checkbox" id="ready"> Hanya yang ada kamar kosong</label></div>
+    <div class="chips" id="fac"></div>
+  </div>
+  <div class="meta" id="meta"></div>
+  <div class="grid" id="grid"></div>
+</main>
+<footer>Prototipe ONOKOS • Data contoh di sekitar kampus UMM, Malang. Kos yang kamu pasang tersimpan di perangkat ini saja.</footer>
+
+<div class="bar" id="bar"><span id="barTxt"></span><button class="btn acc" id="doCmp">Bandingkan</button><button class="btn ghost" id="clr" style="color:#fff">Reset</button></div>
+<dialog id="dlg"><div class="dl" id="dlBody"></div></dialog>
+
+<script>
+const KEY="onokos:v1";
+const FAC=["WiFi","AC","Kamar mandi dalam","Kasur","Lemari","Parkir motor","Dapur bersama","Laundry"];
+const SEED=[
+{id:"s1",nama:"Kos Melati Tlogomas",area:"Tlogomas",tipe:"Putri",harga:850000,jarak:0.4,sisa:3,fas:["WiFi","Kasur","Lemari","Kamar mandi dalam","Parkir motor"],pemilik:"Bu Sari",wa:"6281300000001",e:"🏠"},
+{id:"s2",nama:"Kos Pak Hadi",area:"Tlogomas",tipe:"Putra",harga:550000,jarak:0.6,sisa:2,fas:["Kasur","Lemari","Parkir motor"],pemilik:"Pak Hadi",wa:"6281300000002",e:"🏡"},
+{id:"s3",nama:"Griya Mahasiswa 21",area:"Landungsari",tipe:"Campur",harga:1100000,jarak:1.8,sisa:5,fas:["WiFi","AC","Kasur","Lemari","Kamar mandi dalam","Laundry"],pemilik:"Mas Rendra",wa:"6281300000003",e:"🏢"},
+{id:"s4",nama:"Kos Anggrek Putri",area:"Tlogomas",tipe:"Putri",harga:700000,jarak:0.3,sisa:0,fas:["WiFi","Kasur","Lemari","Dapur bersama"],pemilik:"Bu Lina",wa:"6281300000004",e:"🌸"},
+{id:"s5",nama:"Kos Executive Dinoyo",area:"Dinoyo",tipe:"Putra",harga:1500000,jarak:2.6,sisa:2,fas:["WiFi","AC","Kasur","Lemari","Kamar mandi dalam","Parkir motor","Laundry"],pemilik:"Pak Anton",wa:"6281300000005",e:"🏙️"},
+{id:"s6",nama:"Kos Sederhana Gang 4",area:"Sumbersari",tipe:"Putra",harga:450000,jarak:3.2,sisa:4,fas:["Kasur","Lemari","Dapur bersama"],pemilik:"Bu Ani",wa:"6281300000006",e:"🏘️"},
+{id:"s7",nama:"Kos Putri Asri",area:"Landungsari",tipe:"Putri",harga:950000,jarak:1.2,sisa:1,fas:["WiFi","AC","Kasur","Lemari","Parkir motor"],pemilik:"Bu Dewi",wa:"6281300000007",e:"🌿"},
+{id:"s8",nama:"Kos Campur Pelangi",area:"Tlogomas",tipe:"Campur",harga:650000,jarak:0.9,sisa:6,fas:["WiFi","Kasur","Lemari","Dapur bersama","Laundry"],pemilik:"Mas Joko",wa:"6281300000008",e:"🌈"}
+];
+let mine=[];try{mine=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(mine))}catch(e){}};
+const S={q:"",p:2000000,d:5,tipe:"",sort:"d",ready:false,fac:new Set(),cmp:new Set()};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rp=n=>"Rp"+Number(n).toLocaleString("id-ID");
+const all=()=>[...mine,...SEED];
+const walk=k=>Math.max(1,Math.round(k*12));
+const av=i=>i.sisa>0?`<span class="avail">● ${i.sisa} kamar kosong</span>`:`<span class="full">● Penuh</span>`;
+
+function facChips(){
+  $("fac").innerHTML=FAC.map(f=>`<button class="chip" aria-pressed="${S.fac.has(f)}" data-f="${f}">${f}</button>`).join("");
+  $("fac").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{const f=b.dataset.f;S.fac.has(f)?S.fac.delete(f):S.fac.add(f);render()});
+}
+function render(){
+  facChips();
+  $("vP").textContent=S.p>=2000000?"semua":rp(S.p);$("vD").textContent=S.d>=5?"semua":S.d+" km";
+  const q=S.q.toLowerCase();
+  let a=all().filter(i=>i.harga<=S.p&&i.jarak<=S.d&&(!S.tipe||i.tipe===S.tipe)&&(!S.ready||i.sisa>0)&&[...S.fac].every(f=>i.fas.includes(f))&&(`${i.nama} ${i.area}`.toLowerCase().includes(q)));
+  a.sort(S.sort==="lo"?(x,y)=>x.harga-y.harga:S.sort==="hi"?(x,y)=>y.harga-x.harga:(x,y)=>x.jarak-y.jarak);
+  $("meta").textContent=a.length+" kos ditemukan";
+  $("grid").innerHTML=a.length?a.map(i=>`<article class="card"><div class="thumb" aria-hidden="true">${i.e}</div>
+   <div><span class="tag">${esc(i.tipe)}</span>${av(i)}</div><h3>${esc(i.nama)}</h3>
+   <div class="mk">📍 ${esc(i.area)} • ${i.jarak} km (±${walk(i.jarak)} mnt jalan kaki)</div>
+   <div class="price">${rp(i.harga)} <small>/ bulan</small></div>
+   <div class="fac">${i.fas.map(esc).join(" • ")}</div>
+   <div class="row"><label class="cmp"><input type="checkbox" data-c="${i.id}" ${S.cmp.has(i.id)?"checked":""}> Bandingkan</label><button class="btn" data-d="${i.id}">Detail</button></div></article>`).join(""):`<div class="empty">Belum ada kos yang cocok. Longgarkan filter harga, jarak, atau fasilitas.</div>`;
+  $("grid").querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>detail(b.dataset.d));
+  $("grid").querySelectorAll("[data-c]").forEach(c=>c.onchange=()=>{
+    if(c.checked){if(S.cmp.size>=3){c.checked=false;alert("Maksimal 3 kos untuk dibandingkan.");return}S.cmp.add(c.dataset.c)}else S.cmp.delete(c.dataset.c);bar()});
+  bar();
+}
+function bar(){$("bar").classList.toggle("on",S.cmp.size>0);$("barTxt").textContent=S.cmp.size+" kos dipilih";$("doCmp").disabled=S.cmp.size<2;$("doCmp").style.opacity=S.cmp.size<2?.5:1}
+function open(h){$("dlBody").innerHTML=h;$("dlg").showModal();$("dlBody").querySelectorAll("[data-x]").forEach(b=>b.onclick=()=>$("dlg").close())}
+function detail(id){
+  const i=all().find(x=>x.id===id);if(!i)return;
+  const msg=encodeURIComponent(`Halo ${i.pemilik}, saya lihat "${i.nama}" di ONOKOS. Apakah masih ada kamar kosong?`);
+  const wa="https://wa.me/"+String(i.wa).replace(/\D/g,"")+"?text="+msg;
+  open(`<div class="thumb" style="height:110px;background:var(--surf)">${i.e}</div><h2>${esc(i.nama)}</h2>
+  <div class="price">${rp(i.harga)} <small>/ bulan</small></div>
+  <div class="mk">Tipe: ${esc(i.tipe)}<br>Area: 📍 ${esc(i.area)} • ${i.jarak} km dari kampus (±${walk(i.jarak)} mnt jalan kaki)<br>Ketersediaan: ${av(i)}<br>Pemilik: ${esc(i.pemilik)}</div>
+  <div><b>Fasilitas</b><div class="chips" style="margin-top:6px">${i.fas.map(f=>`<span class="chip" style="cursor:default">${esc(f)}</span>`).join("")}</div></div>
+  <div class="row"><a href="${wa}" target="_blank" rel="noopener" style="text-decoration:none"><button class="btn">Hubungi pemilik (WhatsApp)</button></a>
+  ${i.mine?`<button class="btn red" id="del">Hapus</button>`:""}<button class="btn ghost" data-x>Tutup</button></div>
+  ${i.mine?"":`<div class="mk">Data dan nomor pemilik pada contoh ini hanya untuk demo.</div>`}`);
+  if(i.mine)$("del").onclick=()=>{mine=mine.filter(m=>m.id!==id);S.cmp.delete(id);save();$("dlg").close();render()};
+}
+function compare(){
+  const a=[...S.cmp].map(id=>all().find(x=>x.id===id)).filter(Boolean);
+  const lo=Math.min(...a.map(x=>x.harga)),nr=Math.min(...a.map(x=>x.jarak));
+  const rows=[["Harga / bulan",x=>`<span class="${x.harga===lo?"best":""}">${rp(x.harga)}${x.harga===lo?" ✓ termurah":""}</span>`],
+   ["Jarak ke kampus",x=>`<span class="${x.jarak===nr?"best":""}">${x.jarak} km${x.jarak===nr?" ✓ terdekat":""}</span>`],
+   ["Tipe",x=>esc(x.tipe)],["Ketersediaan",x=>av(x)],["Fasilitas",x=>x.fas.map(esc).join(", ")]];
+  open(`<h2>Bandingkan kos</h2><div class="tbl"><table><tr><th></th>${a.map(x=>`<th>${esc(x.nama)}</th>`).join("")}</tr>
+  ${rows.map(r=>`<tr><th>${r[0]}</th>${a.map(x=>`<td>${r[1](x)}</td>`).join("")}</tr>`).join("")}</table></div><button class="btn ghost" data-x>Tutup</button>`);
+}
+function pasang(){
+  open(`<h2>Pasang kos</h2><form id="f" style="display:grid;gap:10px">
+  <label>Nama kos<input name="nama" required maxlength="60"></label>
+  <label>Area / alamat singkat<input name="area" required maxlength="50"></label>
+  <div class="row"><label style="flex:1">Tipe<select name="tipe"><option>Putra</option><option>Putri</option><option>Campur</option></select></label>
+  <label style="flex:1">Kamar kosong<input name="sisa" type="number" min="0" max="99" value="1" required></label></div>
+  <div class="row"><label style="flex:1">Harga / bulan (Rp)<input name="harga" type="number" min="100000" step="50000" required></label>
+  <label style="flex:1">Jarak ke kampus (km)<input name="jarak" type="number" min="0.1" max="20" step="0.1" required></label></div>
+  <div><b style="font-size:14px">Fasilitas</b><div class="row" style="margin-top:6px">${FAC.map(f=>`<label class="cmp" style="font-weight:400"><input type="checkbox" name="fas" value="${f}"> ${f}</label>`).join("")}</div></div>
+  <label>Nama pemilik<input name="pemilik" required maxlength="40"></label>
+  <label>Nomor WhatsApp<input name="wa" type="tel" required placeholder="628123456789"></label>
+  <div class="row"><button class="btn" type="submit">Pasang</button><button class="btn ghost" type="button" data-x>Batal</button></div></form>`);
+  $("f").onsubmit=e=>{e.preventDefault();const fd=new FormData(e.target),d=Object.fromEntries(fd);
+    mine.unshift({id:"m"+Date.now(),nama:d.nama,area:d.area,tipe:d.tipe,harga:+d.harga,jarak:+d.jarak,sisa:+d.sisa,fas:fd.getAll("fas"),pemilik:d.pemilik,wa:d.wa,e:"🏠",mine:true});
+    save();$("dlg").close();render()};
+}
+$("q").oninput=e=>{S.q=e.target.value;render()};
+$("p").oninput=e=>{S.p=+e.target.value;render()};
+$("d").oninput=e=>{S.d=+e.target.value;render()};
+$("tipe").onchange=e=>{S.tipe=e.target.value;render()};
+$("sort").onchange=e=>{S.sort=e.target.value;render()};
+$("ready").onchange=e=>{S.ready=e.target.checked;render()};
+$("pasang").onclick=pasang;$("doCmp").onclick=compare;$("clr").onclick=()=>{S.cmp.clear();render()};
+render();
+</script>
+</body>
+</html>
