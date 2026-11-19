@@ -7,16 +7,15 @@
 <meta name="description" content="Cari kos di sekitar UMM Malang berdasarkan harga, jarak, dan fasilitas. Hubungi pemilik langsung lewat WhatsApp.">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f8fafc;--card:#fff;--ink:#0b1f4b;--mut:#5a6b8c;--line:#e1e7f0;--acc:#1e3a8a;--acc-ink:#fff;--ok:#16794a;--no:#c62828}
-@media(prefers-color-scheme:dark){:root{--bg:#0a1228;--card:#131d3a;--ink:#eef2fb;--mut:#9aa8c8;--line:#26335a;--acc:#4a67d6;--ok:#4ade80;--no:#f87171}}
+:root{--bg:#fff;--card:#fff;--ink:#000;--mut:#444;--line:#d6d6d6;--acc:#000;--acc-ink:#ffd600;--ok:#16794a;--no:#c62828}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.5;padding-bottom:env(safe-area-inset-bottom,0)}
-.hero{background:linear-gradient(135deg,#0b1f4b,#1e3a8a);color:#fff;padding-top:env(safe-area-inset-top,0);padding-bottom:64px}
-.hero .sub{color:#c7d2ee;margin:0}
-.hero .logo b{background:#fff;color:#0b1f4b}
+.hero{background:linear-gradient(135deg,#000,#242424);color:#fff;padding-top:env(safe-area-inset-top,0);padding-bottom:64px}
+.hero .sub{color:#f2f2f2;margin:0}
+.hero .logo b{background:#ffd600;color:#000}
 .hero .btn.alt{color:#fff;border-color:rgba(255,255,255,.55)}
-.panel{margin-top:-44px;box-shadow:0 10px 28px rgba(11,31,75,.14)}
-.card{box-shadow:0 2px 8px rgba(11,31,75,.08)}
+.panel{margin-top:-44px;box-shadow:0 10px 28px rgba(0,0,0,.14)}
+.card{box-shadow:0 2px 8px rgba(0,0,0,.08)}
 .wrap{max-width:1040px;margin:0 auto;padding:0 16px}
 header{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
 .logo{font-weight:800;font-size:1.4rem;letter-spacing:-.02em}
@@ -24,7 +23,7 @@ header{display:flex;align-items:center;justify-content:space-between;padding:16p
 button,input,select,textarea{font:inherit;color:inherit}
 .btn{border:0;border-radius:10px;padding:10px 16px;font-weight:600;cursor:pointer;background:var(--acc);color:var(--acc-ink)}
 .btn.alt{background:transparent;border:1px solid var(--line);color:var(--ink)}
-.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.chip:focus-within{outline:3px solid var(--acc);outline-offset:2px}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.chip:focus-within{outline:3px solid #d4aa00;outline-offset:2px}
 h1{font-size:clamp(1.8rem,5vw,3rem);line-height:1.1;letter-spacing:-.03em;margin:8px 0 6px;font-weight:800;max-width:16ch}
 .sub{color:var(--mut);margin:0 0 20px}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
@@ -38,7 +37,7 @@ input,select,textarea{background:var(--bg);border:1px solid var(--line);border-r
 .bar{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px;color:var(--mut);flex-wrap:wrap;gap:8px}
 .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));padding-bottom:90px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
-.pic{aspect-ratio:16/10;background:linear-gradient(135deg,#8da2c4,#5a6f96);display:grid;place-items:center;font-size:2.6rem;position:relative}
+.pic{aspect-ratio:16/10;background:linear-gradient(135deg,#f2f2f2,#ffd600);display:grid;place-items:center;font-size:2.6rem;position:relative}
 .pic svg{position:absolute;inset:0;width:100%;height:100%}
 .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .tag{position:absolute;left:10px;top:10px;font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:99px;background:var(--card);color:var(--ink)}
