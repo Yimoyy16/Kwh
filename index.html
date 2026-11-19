@@ -62,7 +62,7 @@ footer{color:var(--mut);font-size:.85rem;padding:0 0 100px}
 </head>
 <body>
 <div class="hero"><div class="wrap">
-<header><div class="logo">ONO<b>KOS</b></div><button class="btn alt" id="add">+ Pasang kos</button></header>
+<header><div class="logo">ONO<b>KOS</b></div><div style="display:flex;gap:8px;align-items:center"><button class="btn alt" id="account">Login pemilik</button><button class="btn alt" id="add">+ Pasang kos</button></div></header>
 <h1>Cari kos dekat kampus UMM.</h1>
 <p class="sub">Saring harga, jarak, dan fasilitas, lalu hubungi pemilik lewat WhatsApp.</p>
 </div></div>
@@ -80,7 +80,7 @@ footer{color:var(--mut);font-size:.85rem;padding:0 0 100px}
 
 <div class="bar"><span id="count"></span><button class="btn alt" id="reset">Reset filter</button></div>
 <div class="grid" id="list"></div>
-<footer>Prototipe ONOKOS. Data contoh (fiktif) di sekitar UMM, Malang. Kos yang kamu pasang tersimpan di perangkat ini saja.</footer>
+<footer>ONOKOS · Data contoh ditandai sebagai contoh. Data kos dari pemilik tersimpan di database.</footer>
 </div>
 
 <div id="cmpbar"><span id="cmpn"></span><button class="btn" id="cmpgo">Bandingkan</button><button class="btn alt" id="cmpclr">Kosongkan</button></div>
@@ -100,8 +100,21 @@ footer{color:var(--mut);font-size:.85rem;padding:0 0 100px}
 <label class="chip" style="justify-self:start"><input type="checkbox" name="kosong" checked> Ada kamar kosong</label>
 <div style="display:flex;gap:8px"><button class="btn" type="submit">Simpan kos</button><button class="btn alt" type="button" data-close>Batal</button></div>
 </form></dialog>
+<dialog id="du"><form class="dlg" id="uf" method="dialog">
+<button class="btn alt x" type="button" data-close>Tutup</button>
+<h2 id="auth-title">Login pemilik kos</h2>
+<p class="meta" id="auth-desc">Masuk untuk memasang dan mengelola data kos.</p>
+<label class="f">Email<input name="email" type="email" autocomplete="email" required></label>
+<label class="f">Password<input name="password" type="password" minlength="8" autocomplete="current-password" required></label>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="auth-submit" type="submit">Login</button><button class="btn alt" id="auth-toggle" type="button">Buat akun</button></div>
+<p class="meta" id="auth-message" role="status"></p>
+</form></dialog>
 
-<script>
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const SUPABASE_URL="https://ivwsbgghszevhbxacdix.supabase.co";
+const SUPABASE_KEY="sb_publishable_dHudVBrji_-pnziBHc5YHQ_aZQT0jT0";
+const supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
 const FAC=["AC","WiFi","KM dalam","Parkir","Dapur","Kasur"];
 /* Data contoh. Saat database siap, ganti SAMPLE dengan hasil fetch dari Supabase. */
 const SAMPLE=[
@@ -115,8 +128,11 @@ const SAMPLE=[
 const $=s=>document.querySelector(s);
 const rp=n=>"Rp"+n.toLocaleString("id-ID");
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-let mine=[];try{mine=JSON.parse(localStorage.getItem("onokos_mine")||"[]")}catch(e){}
-const save=()=>{try{localStorage.setItem("onokos_mine",JSON.stringify(mine))}catch(e){}};
+let mine=[];
+let session=null;
+let authMode="login";
+let facilityIds={};
+let dbReady=false;
 let cmp=[];
 const all=()=>[...mine,...SAMPLE];
 const chip=(n,v,name)=>`<label class="chip"><input type="checkbox" ${name?`name="${name}"`:"data-f"} value="${v}"> ${v}</label>`;
@@ -158,7 +174,7 @@ function detail(id){
  <div class="chips">${k.fac.map(f=>`<span class="chip">${esc(f)}</span>`).join("")}</div>
  <div class="meta">Terakhir diperbarui: ${esc(k.upd||"-")}</div>
  <a class="btn" style="text-align:center;text-decoration:none" href="${wa(k)}" target="_blank" rel="noopener">Hubungi lewat WhatsApp</a>
- ${mine.some(m=>m.id===id)?`<button class="btn alt" data-del="${id}">Hapus kos ini</button>`:""}`;
+ ${mine.some(m=>m.id===id&&m.owner===session?.user?.id)?`<button class="btn alt" data-del="${id}">Hapus kos ini</button>`:""}`;
  $("#dd").showModal();
 }
 function bar(){
@@ -170,7 +186,7 @@ document.addEventListener("click",e=>{
  const t=e.target;
  if(t.dataset.d)detail(t.dataset.d);
  if(t.hasAttribute("data-close"))t.closest("dialog").close();
- if(t.dataset.del){mine=mine.filter(m=>m.id!==t.dataset.del);save();cmp=cmp.filter(c=>c!==t.dataset.del);$("#dd").close();render();bar()}
+ if(t.dataset.del){deleteKos(t.dataset.del)}
 });
 document.addEventListener("change",e=>{
  const t=e.target;
@@ -188,13 +204,51 @@ $("#cmpgo").onclick=()=>{
  $("#cmpt").innerHTML=`<table><tr><th></th>${ks.map(k=>`<th>${esc(k.nama)}</th>`).join("")}</tr>${rows.map(r=>`<tr><th>${r[0]}</th>${ks.map(k=>`<td>${esc(r[1](k))}</td>`).join("")}</tr>`).join("")}</table>`;
  $("#dc").showModal();
 };
-$("#add").onclick=()=>$("#da").showModal();
-$("#af").addEventListener("submit",e=>{
- const f=new FormData(e.target);
- mine.unshift({id:"m"+Date.now(),nama:f.get("nama").trim(),alamat:f.get("alamat").trim(),harga:+f.get("harga"),jarak:+f.get("jarak"),tipe:f.get("tipe"),wa:f.get("wa").trim(),foto:f.get("foto")||"",kosong:f.get("kosong")==="on",fac:f.getAll("fac"),upd:new Date().toISOString().slice(0,10)});
- save();e.target.reset();render();
+async function loadKos(){
+  const {data,error}=await supabase.from("kos").select("id,pemilik_id,nama,alamat,harga_per_bulan,jarak_km,tipe,nomor_whatsapp,foto_url,kamar_kosong,created_at,kos_fasilitas(fasilitas_id,fasilitas(nama))").order("created_at",{ascending:false});
+  if(error){console.error(error);alert("Data kos dari database belum dapat dimuat. Periksa kebijakan RLS dan relasi tabel.");return;}
+  mine=(data||[]).map(k=>({id:k.id,nama:k.nama,alamat:k.alamat,harga:Number(k.harga_per_bulan),jarak:Number(k.jarak_km),tipe:k.tipe,wa:k.nomor_whatsapp,foto:k.foto_url||"",kosong:k.kamar_kosong,fac:(k.kos_fasilitas||[]).map(x=>x.fasilitas?.nama).filter(Boolean),upd:k.created_at?.slice(0,10),owner:k.pemilik_id}));
+  dbReady=true;render();bar();
+}
+async function refreshAuth(){
+  const {data}=await supabase.auth.getSession();session=data.session;
+  $("#account").textContent=session?"Akun: "+(session.user.email||"Pemilik"):"Login pemilik";
+}
+function openAuth(mode="login"){
+ authMode=mode;$("#auth-title").textContent=mode==="signup"?"Daftar pemilik kos":"Login pemilik kos";
+ $("#auth-submit").textContent=mode==="signup"?"Buat akun":"Login";
+ $("#auth-toggle").textContent=mode==="signup"?"Sudah punya akun? Login":"Belum punya akun? Daftar";
+ $("#auth-desc").textContent=mode==="signup"?"Buat akun pemilik kos menggunakan email dan password.":"Masuk untuk memasang dan mengelola data kos.";
+ $("#auth-message").textContent="";$("#du").showModal();
+}
+$("#account").onclick=async()=>{if(!session){openAuth("login");return;}if(confirm("Keluar dari akun "+session.user.email+"?")){await supabase.auth.signOut();session=null;await refreshAuth();}};
+$("#auth-toggle").onclick=()=>openAuth(authMode==="login"?"signup":"login");
+$("#uf").addEventListener("submit",async e=>{
+ e.preventDefault();const f=new FormData(e.target),email=String(f.get("email")).trim(),password=String(f.get("password"));
+ $("#auth-message").textContent="Memproses...";
+ const result=authMode==="signup"?await supabase.auth.signUp({email,password}):await supabase.auth.signInWithPassword({email,password});
+ if(result.error){$("#auth-message").textContent=result.error.message;return;}
+ if(authMode==="signup"&&!result.data.session){$("#auth-message").textContent="Akun berhasil dibuat. Periksa email untuk konfirmasi, lalu login.";return;}
+ session=result.data.session;$("#du").close();await refreshAuth();alert("Berhasil masuk.");
 });
-render();bar();
+supabase.auth.onAuthStateChange((_event,newSession)=>{session=newSession;refreshAuth();});
+$("#add").onclick=()=>{if(!session){openAuth("login");return;}$("#da").showModal()};
+$("#af").addEventListener("submit",async e=>{
+ e.preventDefault();if(!session){$("#da").close();openAuth("login");return;}
+ const f=new FormData(e.target),chosen=f.getAll("fac"),payload={pemilik_id:session.user.id,nama:String(f.get("nama")).trim(),alamat:String(f.get("alamat")).trim(),harga_per_bulan:Number(f.get("harga")),jarak_km:Number(f.get("jarak")),tipe:f.get("tipe"),nomor_whatsapp:String(f.get("wa")).trim(),foto_url:String(f.get("foto")||"").trim()||null,kamar_kosong:f.get("kosong")==="on"};
+ const {data,error}=await supabase.from("kos").insert(payload).select("id").single();
+ if(error){alert("Kos belum tersimpan: "+error.message);return;}
+ const links=chosen.map(name=>({kos_id:data.id,fasilitas_id:facilityIds[name]})).filter(x=>x.fasilitas_id!=null);
+ if(links.length){const {error:linkError}=await supabase.from("kos_fasilitas").insert(links);if(linkError){alert("Data kos tersimpan, tetapi fasilitas gagal disimpan: "+linkError.message);}}
+ e.target.reset();$("#da").close();await loadKos();alert("Kos berhasil disimpan ke database.");
+});
+async function deleteKos(id){if(!confirm("Hapus data kos ini dari database?"))return;const {error}=await supabase.from("kos").delete().eq("id",id);if(error){alert("Gagal menghapus: "+error.message);return;}cmp=cmp.filter(c=>c!==id);$("#dd").close();await loadKos();}
+async function loadFacilities(){
+ const {data,error}=await supabase.from("fasilitas").select("id,nama");
+ if(error){console.error("Fasilitas:",error);return;}
+ facilityIds={};(data||[]).forEach(x=>facilityIds[x.nama]=x.id);
+}
+await refreshAuth();await loadFacilities();await loadKos();render();bar();
 </script>
 </body>
 </html>
